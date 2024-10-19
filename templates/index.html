@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regression Model Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #007BFF;
+        }
+
+        form {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="number"],
+        select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        h3 {
+            text-align: center;
+            margin-top: 20px;
+            color: #28a745;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>Enter Details</h2>
+    <form id="inputForm">
+        <!-- Weight input -->
+        <label for="weight">Weight (kg):</label>
+        <input type="number" id="weight" name="weight" required step="0.1" oninput="calculateBMI()">
+
+        <!-- Height input in meters -->
+        <label for="height">Height (meters):</label>
+        <input type="number" id="height" name="height" required step="0.01" oninput="calculateBMI()">
+
+        <!-- BMI input (readonly) -->
+        <label for="bmi">BMI:</label>
+        <input type="text" id="bmi" name="bmi" readonly>
+
+        <!-- Age input -->
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required><br>
+
+        <!-- Sex dropdown -->
+        <label for="sex">Sex:</label>
+        <select id="sex" name="sex" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select><br>
+
+        <!-- Children input -->
+        <label for="children">Number of Children:</label>
+        <input type="number" id="children" name="children" required><br>
+
+        <!-- Smoker dropdown -->
+        <label for="smoker">Smoker:</label>
+        <select id="smoker" name="smoker" required>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select><br>
+
+        <!-- Region dropdown -->
+        <label for="region">Region:</label>
+        <select id="region" name="region" required>
+            <option value="northeast">Northeast</option>
+            <option value="northwest">Northwest</option>
+            <option value="southeast">Southeast</option>
+            <option value="southwest">Southwest</option>
+        </select><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const heightMeters = parseFloat(document.getElementById('height').value);
+
+            if (weight > 0 && heightMeters > 0) {
+                const bmi = weight / (heightMeters * heightMeters);
+                document.getElementById('bmi').value = bmi.toFixed(2);
+            } else {
+                document.getElementById('bmi').value = '';
+            }
+        }
+
+        document.getElementById('inputForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            });
+
+            const data = await response.json();
+            document.getElementById('result').innerText = 'Predicted Charges: ' + data.results.toFixed(2);
+        });
+    </script>
+</body>
+</html>
